@@ -1,0 +1,251 @@
+/* =====================================================================
+   Markdown Notepad Pro — app.css
+   Extends the shared design system (base.css). Uses only base tokens
+   so dark/light themes both work. Layout: sidebar + editor/preview.
+   ===================================================================== */
+
+/* Theme toggle icon swap */
+.icon-moon { display: none; }
+[data-theme="light"] .icon-sun { display: none; }
+[data-theme="light"] .icon-moon { display: inline; }
+
+/* Autosave indicator in the header */
+.save-indicator {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12.5px; font-weight: 600; color: var(--text-muted);
+  padding: 6px 12px; border-radius: var(--radius-full);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.save-indicator .save-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--success); box-shadow: 0 0 10px var(--success);
+  transition: background var(--dur-2);
+}
+.save-indicator.is-saving { color: var(--warning); }
+.save-indicator.is-saving .save-dot { background: var(--warning); box-shadow: 0 0 10px var(--warning); animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: .4; } }
+
+/* ===================== App layout ===================== */
+.app {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+  padding-bottom: var(--space-12);
+}
+.app.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+.app.sidebar-collapsed .sidebar { display: none; }
+
+/* ===================== Sidebar ===================== */
+.sidebar {
+  position: sticky; top: 88px;
+  display: flex; flex-direction: column;
+  max-height: calc(100vh - 120px);
+  padding: var(--space-4);
+  animation: fadeIn .4s var(--ease) both;
+}
+.sidebar-head { display: flex; flex-direction: column; gap: var(--space-3); }
+.sidebar-title {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0; font-size: 1rem; letter-spacing: -.01em;
+}
+.sidebar-title .badge { font-size: 11px; padding: 2px 8px; }
+
+.search-wrap { position: relative; }
+.search-wrap .search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none;
+}
+.search-wrap input { padding-left: 38px; }
+
+.note-list {
+  list-style: none; margin: var(--space-4) 0 0; padding: 0;
+  overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 6px;
+}
+.note-item {
+  padding: 10px 12px; border-radius: var(--radius-md);
+  border: 1px solid transparent; cursor: pointer;
+  transition: background var(--dur-1), border-color var(--dur-1), transform var(--dur-1);
+}
+.note-item:hover { background: var(--surface-2); border-color: var(--border); }
+.note-item.is-active {
+  background: var(--gradient-brand-soft);
+  border-color: var(--brand-500);
+}
+.note-item-title { font-weight: 600; font-size: 14px; color: var(--text); }
+.note-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.note-item-date { font-size: 11px; color: var(--text-muted); margin-top: 6px; opacity: .85; }
+.note-item.is-active .note-item-title { color: var(--brand-400); }
+
+.note-empty, .note-list .note-empty {
+  text-align: center; color: var(--text-muted); font-size: 13px;
+  padding: var(--space-8) var(--space-4);
+}
+
+.sidebar-foot { padding-top: var(--space-4); margin-top: var(--space-2); border-top: 1px solid var(--border); }
+
+/* ===================== Workspace ===================== */
+.workspace {
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - 160px);
+  padding: var(--space-4);
+  animation: rise .5s var(--ease) both;
+}
+.ws-head {
+  display: flex; align-items: center; gap: var(--space-3);
+  flex-wrap: wrap; margin-bottom: var(--space-3);
+}
+.title-input {
+  flex: 1; min-width: 180px;
+  font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em;
+  background: transparent; border: 1px solid transparent; padding: 8px 10px;
+}
+.title-input:hover { border-color: var(--border); }
+.ws-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* Toolbar */
+.toolbar {
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  padding: 6px; margin-bottom: var(--space-3);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.tb-btn { width: 34px; height: 34px; color: var(--text-secondary); }
+.tb-btn:hover { color: var(--text); }
+.tb-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+/* Panes */
+.panes {
+  display: grid; gap: var(--space-4); flex: 1; min-height: 420px;
+}
+.panes[data-view="split"] { grid-template-columns: 1fr 1fr; }
+.panes[data-view="edit"] { grid-template-columns: 1fr; }
+.panes[data-view="edit"] .pane-preview { display: none; }
+.panes[data-view="preview"] { grid-template-columns: 1fr; }
+.panes[data-view="preview"] .pane-edit { display: none; }
+
+.pane { display: flex; min-height: 420px; }
+.editor {
+  flex: 1; resize: none; width: 100%;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.7;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--space-4);
+  tab-size: 2;
+}
+.preview {
+  flex: 1; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--space-5) var(--space-6);
+}
+
+/* Footer stats */
+.ws-foot {
+  display: flex; align-items: center; gap: var(--space-3);
+  margin-top: var(--space-3); padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  font-size: 12.5px; color: var(--text-secondary);
+}
+.ws-foot .spacer { flex: 1; }
+.ws-foot .dot-sep { color: var(--text-muted); }
+.ws-foot .stat { white-space: nowrap; }
+
+/* ===================== Markdown preview styles ===================== */
+.markdown-body { color: var(--text); }
+.markdown-body > :first-child { margin-top: 0; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3,
+.markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  margin: 1.4em 0 .5em; line-height: 1.25; font-weight: 700; letter-spacing: -.01em;
+}
+.markdown-body h1 { font-size: 1.8rem; padding-bottom: .3em; border-bottom: 1px solid var(--border); }
+.markdown-body h2 { font-size: 1.45rem; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+.markdown-body h3 { font-size: 1.2rem; }
+.markdown-body h4 { font-size: 1.05rem; }
+.markdown-body h5 { font-size: .95rem; }
+.markdown-body h6 { font-size: .85rem; color: var(--text-secondary); }
+.markdown-body p { margin: 0 0 1em; }
+.markdown-body a { color: var(--brand-400); text-decoration: underline; text-underline-offset: 2px; }
+.markdown-body ul, .markdown-body ol { margin: 0 0 1em; padding-left: 1.6em; }
+.markdown-body li { margin: .25em 0; }
+.markdown-body li > ul, .markdown-body li > ol { margin: .25em 0; }
+.markdown-body blockquote {
+  margin: 0 0 1em; padding: .4em 1.1em;
+  border-left: 3px solid var(--brand-500);
+  background: var(--gradient-brand-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-secondary);
+}
+.markdown-body blockquote > :last-child { margin-bottom: 0; }
+.markdown-body blockquote blockquote { margin-top: .5em; }
+
+.markdown-body .md-inline-code, .markdown-body code:not(.md-code) {
+  font-family: var(--font-mono); font-size: .88em;
+  background: var(--surface-3); border: 1px solid var(--border);
+  padding: .12em .4em; border-radius: 6px;
+}
+.markdown-body .md-pre {
+  position: relative; margin: 0 0 1em; overflow: hidden;
+  background: var(--surface-solid); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+[data-theme="light"] .markdown-body .md-pre { background: #0c0e1a; }
+.markdown-body .md-code-lang {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); padding: 8px 14px;
+  border-bottom: 1px solid var(--border); background: var(--surface);
+}
+[data-theme="light"] .markdown-body .md-code-lang { background: rgba(255,255,255,.06); color: #9aa0b5; border-color: rgba(255,255,255,.08); }
+.markdown-body .md-code {
+  display: block; overflow-x: auto;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  padding: 14px; color: var(--text); white-space: pre;
+}
+[data-theme="light"] .markdown-body .md-code { color: #e8e9f2; }
+
+.markdown-body hr { margin: 1.6em 0; border-top: 1px solid var(--border); }
+.markdown-body img { max-width: 100%; border-radius: var(--radius-md); }
+
+.markdown-body .md-table-wrap { overflow-x: auto; margin: 0 0 1em; }
+.markdown-body .md-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.markdown-body .md-table th, .markdown-body .md-table td {
+  border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+}
+.markdown-body .md-table th { background: var(--surface-2); font-weight: 700; }
+.markdown-body .md-table tr:nth-child(even) td { background: var(--surface); }
+.markdown-body .md-empty { color: var(--text-muted); font-style: italic; }
+
+/* Shortcuts modal table */
+.shortcut-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.shortcut-table td { padding: 9px 4px; border-bottom: 1px solid var(--border); }
+.shortcut-table td:first-child { white-space: nowrap; width: 42%; }
+.shortcut-table tr:last-child td { border-bottom: none; }
+
+/* ===================== Mobile view switch ===================== */
+/* The "Split" option only makes sense on wide screens */
+@media (max-width: 880px) {
+  .view-switch .split-only { display: none; }
+  /* Force a single column on small screens regardless of stored split */
+  .panes[data-view="split"] { grid-template-columns: 1fr; }
+  .panes[data-view="split"] .pane-preview { display: none; }
+}
+
+/* ===================== Responsive ===================== */
+@media (max-width: 880px) {
+  .app { grid-template-columns: 1fr; }
+  .app.sidebar-collapsed { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static; max-height: 320px; top: auto;
+  }
+  .workspace { min-height: auto; }
+  .panes, .pane { min-height: 340px; }
+  #sidebarToggle { display: none !important; }
+}
+
+@media (max-width: 520px) {
+  .save-indicator .save-label { display: none; }
+  .save-indicator { padding: 8px; }
+  .ws-foot { flex-wrap: wrap; }
+  .title-input { font-size: 1rem; }
+  .ws-actions { width: 100%; }
+  .ws-actions .view-switch { flex: 1; }
+  .ws-actions .view-switch button { flex: 1; }
+}
