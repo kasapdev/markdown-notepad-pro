@@ -72,3 +72,9 @@ Then open `index.html` directly in your browser (double-click it, or `file://` i
 ## License
 
 MIT Licensed. Part of the Web Utility Suite.
+
+---
+
+## Part of the kasapdev Tools Suite
+
+One of 45+ zero-dependency vanilla JS tools, all free and open source — [see the full list](https://github.com/kasapdev/kasapdev).
