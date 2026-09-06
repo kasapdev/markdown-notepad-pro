@@ -307,18 +307,17 @@
 
   function insertLink() {
     var s = editor.selectionStart, e = editor.selectionEnd;
-    var label = editor.value.slice(s, e) || 'link text';
-    wrapSelection('[' + label + '](', ')', '');
-    /* move caret to the url placeholder */
-    var pos = editor.selectionStart;
-    editor.setSelectionRange(pos, pos);
-    var v = editor.value;
-    var urlPos = v.indexOf('](', pos) + 2;
-    if (urlPos > 1) {
-      editor.value = v.slice(0, urlPos) + 'https://' + v.slice(urlPos);
-      editor.setSelectionRange(urlPos, urlPos + 8);
-      onEdit();
-    }
+    var val = editor.value;
+    var label = val.slice(s, e) || 'link text';
+    var before = '[' + label + '](';
+    var urlPlaceholder = 'https://';
+    var inserted = before + urlPlaceholder + ')';
+    editor.value = val.slice(0, s) + inserted + val.slice(e);
+    /* select the url placeholder for easy overwriting */
+    var urlStart = s + before.length;
+    editor.focus();
+    editor.setSelectionRange(urlStart, urlStart + urlPlaceholder.length);
+    onEdit();
   }
 
   function insertCodeBlock() {
